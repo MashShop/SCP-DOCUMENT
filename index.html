@@ -1,0 +1,437 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>TOP SECRET</title>
+  <style>
+    /* --- Reset & Umum --- */
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      overflow-x: hidden;
+    }
+    .hidden { display: none; }
+    .screen { width: 100vw; height: 100vh; position: relative; }
+    
+    /* --- Main Menu Screen --- */
+    #main-menu {
+      background: url('https://i.postimg.cc/FsxsB43y/images-20.jpg') no-repeat center center fixed;
+      background-size: cover;
+      display: block;
+    }
+    /* Title Bar ala Windows Modern */
+    .title-bar {
+      background: #1f1f1f;
+      padding: 10px 20px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      color: white;
+    }
+    .title-bar h1 { font-size: 20px; }
+    .title-bar button {
+      background: none;
+      border: none;
+      color: red;
+      font-size: 20px;
+      cursor: pointer;
+    }
+    /* Sidebar vertikal di pojok kiri */
+    .sidebar {
+      position: absolute;
+      top: 20px;
+      left: 20px;
+      display: flex;
+      flex-direction: column;
+      gap: 30px;
+    }
+    .sidebar .icon {
+      text-align: center;
+      cursor: pointer;
+    }
+    .sidebar .icon img {
+      width: 80px;
+      border: 2px solid white;
+      border-radius: 8px;
+    }
+    .sidebar .icon p {
+      margin-top: 5px;
+      font-size: 14px;
+      color: white;
+    }
+    /* Taskbar di pojok kanan bawah (jam & tanggal) */
+    .taskbar {
+      position: fixed;
+      bottom: 0;
+      right: 0;
+      background: #1f1f1f;
+      padding: 5px 10px;
+      margin: 10px;
+      border-radius: 5px;
+      color: white;
+      font-size: 14px;
+    }
+    
+    /* --- Window Popups (Profile, Document, CCTV) --- */
+    .window {
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      width: 500px;
+      max-width: 90%;
+      background: white;
+      color: black;
+      transform: translate(-50%, -50%) scale(0.9);
+      opacity: 0;
+      border-radius: 8px;
+      overflow: hidden;
+      z-index: 10;
+      transition: transform 0.3s ease, opacity 0.3s ease;
+      display: none;
+    }
+    .window.open {
+      transform: translate(-50%, -50%) scale(1);
+      opacity: 1;
+    }
+    .window .window-title {
+      background: #1f1f1f;
+      color: white;
+      padding: 10px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .window .window-title button {
+      background: none;
+      border: none;
+      color: red;
+      font-size: 16px;
+      cursor: pointer;
+    }
+    .window .window-content { padding: 20px; }
+    .scrollable { max-height: 300px; overflow-y: auto; }
+    /* Tampilan ID Card Profile */
+    .profile-img {
+      width: 100px;
+      border-radius: 50%;
+      margin-bottom: 15px;
+    }
+    .profile-details p {
+      margin: 5px 0;
+      font-size: 16px;
+    }
+    
+    /* --- CCTV Window --- */
+    .cctv-window {
+      position: fixed;
+      top: 10%;
+      left: 50%;
+      transform: translateX(-50%) scale(0.9);
+      width: 80%;
+      height: 60%;
+      background: rgba(0,0,0,0.9);
+      border-radius: 10px;
+      overflow: hidden;
+      z-index: 15;
+      opacity: 0;
+      transition: transform 0.3s ease, opacity 0.3s ease;
+      display: none;
+    }
+    .cctv-window.open {
+      transform: translateX(-50%) scale(1);
+      opacity: 1;
+    }
+    .cctv-window iframe {
+      width: 100%;
+      height: calc(100% - 50px);
+      border: none;
+    }
+    .cctv-controls {
+      background: #1f1f1f;
+      height: 50px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 10px;
+    }
+    .cctv-controls button {
+      padding: 5px 10px;
+      background: #0078D7;
+      border: none;
+      border-radius: 3px;
+      color: white;
+      cursor: pointer;
+      font-size: 14px;
+    }
+    .cctv-window .close-btn {
+      position: absolute;
+      top: 10px;
+      right: 10px;
+      background: red;
+      color: white;
+      padding: 5px 10px;
+      border: none;
+      cursor: pointer;
+      z-index: 5;
+    }
+    /* Tombol Enlarge CCTV */
+    .cctv-controls .enlarge-btn {
+      background: #00a86b;
+    }
+    
+    /* --- Glitch Effect (Don't Open It) --- */
+    #glitch-screen {
+      display: none;
+      position: fixed;
+      top: 0; left: 0;
+      width: 100vw;
+      height: 100vh;
+      background: url('https://i.postimg.cc/yx917pH1/images-8.png') no-repeat center center;
+      background-size: cover;
+      opacity: 0.8;
+      animation: glitchAnim 1s infinite;
+      z-index: 20;
+    }
+    @keyframes glitchAnim {
+      0% { transform: translate(0, 0); }
+      25% { transform: translate(-10px, 10px); }
+      50% { transform: translate(10px, -10px); }
+      75% { transform: translate(-10px, 10px); }
+      100% { transform: translate(0, 0); }
+    }
+    
+    /* --- Responsiveness --- */
+    @media (max-width: 768px) {
+      .sidebar .icon img { width: 60px; }
+      .sidebar .icon p { font-size: 12px; }
+      .title-bar h1 { font-size: 18px; }
+    }
+    @media (max-width: 480px) {
+      .sidebar { top: 10px; left: 10px; gap: 20px; }
+      .sidebar .icon img { width: 50px; }
+      .title-bar h1 { font-size: 16px; }
+    }
+  </style>
+</head>
+<body>
+  <!-- Main Menu Screen -->
+  <div id="main-menu" class="screen">
+    <div class="title-bar">
+      <h1>TOP SECRET</h1>
+      <!-- Tombol Exit: Refresh halaman -->
+      <button onclick="exitApp()">X</button>
+    </div>
+    <!-- Sidebar Vertikal di Pojok Kiri -->
+    <div class="sidebar">
+      <!-- Profile Icon (Logo generik) -->
+      <div class="icon" onclick="openProfile()">
+        <img src="https://i.postimg.cc/s2ZpCyNb/Background-Eraser-20250220-162639765.png" alt="Profile Icon">
+        <p>Profile</p>
+      </div>
+      <!-- Top Secret Document Icon -->
+      <div class="icon" onclick="openDocument()">
+        <img src="https://i.postimg.cc/Z5QrQ0Vr/Background-Eraser-20250220-162624921.png" alt="Top Secret Document">
+        <p>TOP SECRET</p>
+      </div>
+      <!-- Don't Open It Icon -->      
+      <div class="icon" onclick="triggerGlitch()">
+        <img src="https://i.postimg.cc/qR78zwrY/Background-Eraser-20250220-164541380.png" alt="Don't Open It">
+        <p>DON'T OPEN IT</p>
+      </div>
+      <!-- Chrome Icon -->      
+      <div class="icon" onclick="openChrome()">
+        <img src="https://i.postimg.cc/GmRBtH70/Background-Eraser-20250220-203056309.png" alt="Chrome">
+        <p>Chrome</p>
+      </div>
+      <!-- YouTube Icon -->      
+      <div class="icon" onclick="openYouTube()">
+        <img src="https://i.postimg.cc/bvNs04f3/Background-Eraser-20250220-203029498.png" alt="YouTube">
+        <p>YouTube</p>
+      </div>
+      <!-- CCTV Icon -->      
+      <div class="icon" onclick="openCCTV()">
+        <img src="https://i.postimg.cc/zB4vrBbc/Background-Eraser-20250220-203043179.png" alt="CCTV">
+        <p>CCTV</p>
+      </div>
+    </div>
+    <!-- Taskbar: Jam & Tanggal di pojok kanan bawah -->
+    <div class="taskbar">
+      <div id="clock"></div>
+    </div>
+  </div>
+  
+  <!-- Profile Window (ID Card) -->
+  <div id="profile-window" class="window">
+    <div class="window-title">
+      <span>Profile</span>
+      <button onclick="closeProfile()">X</button>
+    </div>
+    <div class="window-content">
+      <img src="https://i.postimg.cc/xCLs3LGx/images-22.jpg" alt="Caseoh" class="profile-img">
+      <div class="profile-details">
+        <p><strong>Name:</strong> Caseoh</p>
+        <p><strong>Position:</strong> Senior Staff Researcher</p>
+        <p><strong>Department:</strong> SCP Foundation</p>
+        <p><strong>Employee ID:</strong> SCP-CASEOH</p>
+      </div>
+    </div>
+  </div>
+  
+  <!-- Top Secret Document Window -->
+  <div id="document-window" class="window">
+    <div class="window-title">
+      <span>TOP SECRET DOCUMENT</span>
+      <button onclick="closeDocument()">X</button>
+    </div>
+    <div class="window-content scrollable">
+      <p>SOON!</p>
+    </div>
+  </div>
+  
+  <!-- CCTV Window with 5 Camera Options and Enlarge Button -->
+  <div id="cctv-window" class="cctv-window">
+    <button class="close-btn" onclick="closeCCTV()">X</button>
+    <iframe id="cctv-iframe" src="https://www.youtube.com/embed/rjtak9w_Qw4?si=5rqXV74_TZsAYrcl&autoplay=1" allow="autoplay; encrypted-media" allowfullscreen></iframe>
+    <div class="cctv-controls">
+      <button onclick="setCamera(1)">Camera 1</button>
+      <button onclick="setCamera(2)">Camera 2</button>
+      <button onclick="setCamera(3)">Camera 3</button>
+      <button onclick="setCamera(4)">Camera 4</button>
+      <button onclick="setCamera(5)">Camera 5</button>
+      <button class="enlarge-btn" onclick="toggleFullscreen()">Enlarge</button>
+    </div>
+  </div>
+  
+  <!-- Glitch Effect Screen for "Don't Open It" -->
+  <div id="glitch-screen" class="hidden"></div>
+  
+  <script>
+    // Fungsi untuk membuka window Profile
+    function openProfile() {
+      const win = document.getElementById("profile-window");
+      win.style.display = "block";
+      setTimeout(() => { win.classList.add("open"); }, 10);
+    }
+    function closeProfile() {
+      const win = document.getElementById("profile-window");
+      win.classList.remove("open");
+      setTimeout(() => { win.style.display = "none"; }, 300);
+    }
+    
+    // Fungsi untuk membuka window Top Secret Document
+    function openDocument() {
+      const win = document.getElementById("document-window");
+      win.style.display = "block";
+      setTimeout(() => { win.classList.add("open"); }, 10);
+    }
+    function closeDocument() {
+      const win = document.getElementById("document-window");
+      win.classList.remove("open");
+      setTimeout(() => { win.style.display = "none"; }, 300);
+    }
+    
+    // Fungsi untuk membuka CCTV Window
+    function openCCTV() {
+      const win = document.getElementById("cctv-window");
+      win.style.display = "block";
+      setTimeout(() => { win.classList.add("open"); }, 10);
+      setCamera(1); // Set default ke Camera 1
+    }
+    function closeCCTV() {
+      const win = document.getElementById("cctv-window");
+      win.classList.remove("open");
+      setTimeout(() => { win.style.display = "none"; }, 300);
+    }
+    
+    // Fungsi untuk mengubah feed CCTV berdasarkan kamera yang dipilih
+    function setCamera(cam) {
+      let src = "";
+      switch(cam) {
+        case 1:
+          src = "https://www.youtube.com/embed/rjtak9w_Qw4?si=5rqXV74_TZsAYrcl&autoplay=1";
+          break;
+        case 2:
+          src = "https://www.youtube.com/embed/GrDZYPnjR3g?si=zdhXn9NsTyIPH3M_&autoplay=1";
+          break;
+        case 3:
+          src = "https://www.youtube.com/embed/762UBiWqZXY?si=wYjEVcrBPHlpM9ZD&autoplay=1";
+          break;
+        case 4:
+          src = "https://www.youtube.com/embed/WcmE8IGh1kg?si=posNxDf1YEL_i_p4&autoplay=1";
+          break;
+        case 5:
+          src = "https://www.youtube.com/embed/2WTgSnoCCoM?si=RVLUk7mVSNrUBS3F&autoplay=1";
+          break;
+        default:
+          src = "https://www.youtube.com/embed/rjtak9w_Qw4?si=5rqXV74_TZsAYrcl&autoplay=1";
+      }
+      document.getElementById("cctv-iframe").src = src;
+    }
+    
+    // Fungsi untuk efek "Don't Open It" (Glitch) dan redirect ke Rick Roll
+    function triggerGlitch() {
+      document.getElementById("glitch-screen").classList.remove("hidden");
+      setTimeout(() => {
+        window.location.href = "https://www.youtube.com/watch?v=dQw4w9WgXcQ";
+      }, 2000);
+    }
+    
+    // Fungsi untuk membuka Chrome
+    function openChrome() {
+      window.open("https://www.google.com/chrome/", "_blank");
+    }
+    // Fungsi untuk membuka YouTube
+    function openYouTube() {
+      window.open("https://www.youtube.com", "_blank");
+    }
+    
+    // Fungsi exit aplikasi: reload halaman
+    function exitApp() {
+      location.reload();
+    }
+    
+    // Fungsi untuk toggle fullscreen (enlarge) pada CCTV window
+    let isFullscreen = false;
+    function toggleFullscreen() {
+      const cctvWindow = document.getElementById('cctv-window');
+      if (!isFullscreen) {
+        cctvWindow.style.width = '100vw';
+        cctvWindow.style.height = '100vh';
+        cctvWindow.style.top = '0';
+        cctvWindow.style.left = '0';
+        cctvWindow.style.transform = 'none';
+        isFullscreen = true;
+      } else {
+        cctvWindow.style.width = '80%';
+        cctvWindow.style.height = '60%';
+        cctvWindow.style.top = '10%';
+        cctvWindow.style.left = '50%';
+        cctvWindow.style.transform = 'translateX(-50%)';
+        isFullscreen = false;
+      }
+    }
+    
+    // Update clock (jam & tanggal) di taskbar
+    function updateClock() {
+      const now = new Date();
+      let hours = now.getHours();
+      let minutes = now.getMinutes();
+      let seconds = now.getSeconds();
+      let ampm = hours >= 12 ? 'PM' : 'AM';
+      hours = hours % 12;
+      hours = hours ? hours : 12;
+      minutes = minutes < 10 ? '0' + minutes : minutes;
+      seconds = seconds < 10 ? '0' + seconds : seconds;
+      const timeStr = hours + ':' + minutes + ':' + seconds + ' ' + ampm;
+      const day = now.getDate();
+      const month = now.getMonth() + 1;
+      const year = now.getFullYear();
+      const dateStr = day + '/' + month + '/' + year;
+      document.getElementById('clock').textContent = timeStr + '   ' + dateStr;
+    }
+    setInterval(updateClock, 1000);
+    updateClock();
+  </script>
+</body>
+</html>
