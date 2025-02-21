@@ -10,33 +10,19 @@
     body {
       font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
       overflow-x: hidden;
+      background: #000;
     }
     .hidden { display: none; }
     .screen { width: 100vw; height: 100vh; position: relative; }
     
     /* --- Main Menu Screen --- */
     #main-menu {
-      background: url('https://i.postimg.cc/FsxsB43y/images-20.jpg') no-repeat center center fixed;
+      background: url('https://i.postimg.cc/QN1qPzNY/images-24.jpg') no-repeat center center fixed;
       background-size: cover;
       display: block;
     }
-    /* Title Bar ala Windows Modern */
-    .title-bar {
-      background: #1f1f1f;
-      padding: 10px 20px;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      color: white;
-    }
-    .title-bar h1 { font-size: 20px; }
-    .title-bar button {
-      background: none;
-      border: none;
-      color: red;
-      font-size: 20px;
-      cursor: pointer;
-    }
+    /* (Title bar removed as requested) */
+    
     /* Sidebar vertikal di pojok kiri */
     .sidebar {
       position: absolute;
@@ -73,7 +59,7 @@
       font-size: 14px;
     }
     
-    /* --- Window Popups (Profile, Document, CCTV) --- */
+    /* --- Window Popups (Profile, Document, CCTV, Chrome, YouTube) --- */
     .window {
       position: fixed;
       top: 50%;
@@ -111,15 +97,40 @@
     }
     .window .window-content { padding: 20px; }
     .scrollable { max-height: 300px; overflow-y: auto; }
-    /* Tampilan ID Card Profile */
+    
+    /* --- Profile Window Content (Updated) --- */
     .profile-img {
       width: 100px;
       border-radius: 50%;
       margin-bottom: 15px;
+      display: block;
+      margin-left: auto;
+      margin-right: auto;
+    }
+    .profile-details {
+      color: #000;
+    }
+    .profile-details h1 {
+      text-align: center;
+      margin-bottom: 15px;
+      font-size: 20px;
     }
     .profile-details p {
-      margin: 5px 0;
+      margin: 8px 0;
       font-size: 16px;
+    }
+    .profile-details strong {
+      display: inline-block;
+      width: 180px;
+    }
+    .profile-details .section {
+      margin-top: 20px;
+      border-top: 1px solid #000;
+      padding-top: 10px;
+    }
+    .profile-details ul {
+      list-style-type: disc;
+      margin-left: 20px;
     }
     
     /* --- CCTV Window --- */
@@ -154,10 +165,26 @@
       justify-content: center;
       align-items: center;
       gap: 10px;
+      padding: 0 10px;
     }
-    .cctv-controls button {
-      padding: 5px 10px;
+    /* Updated Camera Buttons */
+    .camera-btn {
+      width: 35px;
+      height: 35px;
+      border-radius: 50%;
       background: #0078D7;
+      color: white;
+      font-size: 18px;
+      border: none;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    /* Enlarge Button remains similar */
+    .cctv-controls .enlarge-btn {
+      padding: 5px 10px;
+      background: #00a86b;
       border: none;
       border-radius: 3px;
       color: white;
@@ -175,9 +202,15 @@
       cursor: pointer;
       z-index: 5;
     }
-    /* Tombol Enlarge CCTV */
-    .cctv-controls .enlarge-btn {
-      background: #00a86b;
+    
+    /* --- Chrome Window (Embeds SCP Wiki) --- */
+    .chrome-window {
+      /* Same styling as generic window */
+    }
+    
+    /* --- YouTube Window (Embeds Dr. Bob's Channel) --- */
+    .youtube-window {
+      /* Same styling as generic window */
     }
     
     /* --- Glitch Effect (Don't Open It) --- */
@@ -205,26 +238,19 @@
     @media (max-width: 768px) {
       .sidebar .icon img { width: 60px; }
       .sidebar .icon p { font-size: 12px; }
-      .title-bar h1 { font-size: 18px; }
     }
     @media (max-width: 480px) {
       .sidebar { top: 10px; left: 10px; gap: 20px; }
       .sidebar .icon img { width: 50px; }
-      .title-bar h1 { font-size: 16px; }
     }
   </style>
 </head>
 <body>
-  <!-- Main Menu Screen -->
+  <!-- Main Menu Screen (without the top title bar) -->
   <div id="main-menu" class="screen">
-    <div class="title-bar">
-      <h1>TOP SECRET</h1>
-      <!-- Tombol Exit: Refresh halaman -->
-      <button onclick="exitApp()">X</button>
-    </div>
-    <!-- Sidebar Vertikal di Pojok Kiri -->
+    <!-- Vertical Sidebar on the Left -->
     <div class="sidebar">
-      <!-- Profile Icon (Logo generik) -->
+      <!-- Profile Icon -->
       <div class="icon" onclick="openProfile()">
         <img src="https://i.postimg.cc/s2ZpCyNb/Background-Eraser-20250220-162639765.png" alt="Profile Icon">
         <p>Profile</p>
@@ -239,13 +265,13 @@
         <img src="https://i.postimg.cc/qR78zwrY/Background-Eraser-20250220-164541380.png" alt="Don't Open It">
         <p>DON'T OPEN IT</p>
       </div>
-      <!-- Chrome Icon -->      
+      <!-- Chrome Icon -->
       <div class="icon" onclick="openChrome()">
         <img src="https://i.postimg.cc/GmRBtH70/Background-Eraser-20250220-203056309.png" alt="Chrome">
         <p>Chrome</p>
       </div>
-      <!-- YouTube Icon -->      
-      <div class="icon" onclick="openYouTube()">
+      <!-- YouTube Icon -->
+      <div class="icon" onclick="openYouTubeWindow()">
         <img src="https://i.postimg.cc/bvNs04f3/Background-Eraser-20250220-203029498.png" alt="YouTube">
         <p>YouTube</p>
       </div>
@@ -255,25 +281,47 @@
         <p>CCTV</p>
       </div>
     </div>
-    <!-- Taskbar: Jam & Tanggal di pojok kanan bawah -->
+    <!-- Taskbar: Clock and Date at bottom right -->
     <div class="taskbar">
       <div id="clock"></div>
     </div>
   </div>
   
-  <!-- Profile Window (ID Card) -->
+  <!-- Profile Window (Updated with New Profile Content) -->
   <div id="profile-window" class="window">
     <div class="window-title">
       <span>Profile</span>
       <button onclick="closeProfile()">X</button>
     </div>
     <div class="window-content">
+      <!-- Original Profile Photo remains -->
       <img src="https://i.postimg.cc/xCLs3LGx/images-22.jpg" alt="Caseoh" class="profile-img">
       <div class="profile-details">
+        <h1>SCP FOUNDATION STAFF PROFILE</h1>
         <p><strong>Name:</strong> Caseoh</p>
-        <p><strong>Position:</strong> Senior Staff Researcher</p>
-        <p><strong>Department:</strong> SCP Foundation</p>
-        <p><strong>Employee ID:</strong> SCP-CASEOH</p>
+        <p><strong>Position:</strong> O5-1</p>
+        <p><strong>Access Card:</strong> O5 Card</p>
+        <p><strong>Location:</strong> SR Facility</p>
+        <p><strong>Status:</strong> [REDACTED]</p>
+        <p><strong>Biometric Security:</strong> Retina &amp; DNA Verification</p>
+        <p><strong>Clearance Level:</strong> 5 (Top Secret)</p>
+        <p><strong>Specialization:</strong> Reality Security, Global Administration, Covert Operations</p>
+        
+        <div class="section">
+          <p><strong>Date Joined:</strong> [REDACTED]</p>
+          <p><strong>Operational History:</strong> Overseen more than ██ high-risk SCP exposure incidents.</p>
+          <p><strong>Security Threats:</strong> Primary target for Groups of Interest such as Chaos Insurgency &amp; Serpent’s Hand.</p>
+          <p><strong>Classified Projects:</strong></p>
+          <ul>
+            <li>Project NECRO: [CLASSIFIED]</li>
+            <li>Reality Stabilization Program: ACTIVE</li>
+            <li>[REDACTED] Incident: Involved</li>
+          </ul>
+        </div>
+        
+        <div class="section">
+          <p><strong>Security Warning:</strong> This data is accessible only to O5 personnel. Any unauthorized access attempt will result in immediate termination by Protocol ALPHA-1.</p>
+        </div>
       </div>
     </div>
   </div>
@@ -294,12 +342,34 @@
     <button class="close-btn" onclick="closeCCTV()">X</button>
     <iframe id="cctv-iframe" src="https://www.youtube.com/embed/rjtak9w_Qw4?si=5rqXV74_TZsAYrcl&autoplay=1" allow="autoplay; encrypted-media" allowfullscreen></iframe>
     <div class="cctv-controls">
-      <button onclick="setCamera(1)">Camera 1</button>
-      <button onclick="setCamera(2)">Camera 2</button>
-      <button onclick="setCamera(3)">Camera 3</button>
-      <button onclick="setCamera(4)">Camera 4</button>
-      <button onclick="setCamera(5)">Camera 5</button>
+      <button class="camera-btn" onclick="setCamera(1)">¹</button>
+      <button class="camera-btn" onclick="setCamera(2)">²</button>
+      <button class="camera-btn" onclick="setCamera(3)">³</button>
+      <button class="camera-btn" onclick="setCamera(4)">⁴</button>
+      <button class="camera-btn" onclick="setCamera(5)">⁵</button>
       <button class="enlarge-btn" onclick="toggleFullscreen()">Enlarge</button>
+    </div>
+  </div>
+  
+  <!-- Chrome Window (Embeds SCP Wiki) -->
+  <div id="chrome-window" class="window">
+    <div class="window-title">
+      <span>Chrome Video</span>
+      <button onclick="closeChrome()">X</button>
+    </div>
+    <div class="window-content">
+      <iframe id="chrome-iframe" src="https://scp-wiki.wikidot.com/" frameborder="0" allowfullscreen style="width:100%; height:400px;"></iframe>
+    </div>
+  </div>
+  
+  <!-- YouTube Window (Embeds Dr. Bob's Channel) -->
+  <div id="youtube-window" class="window">
+    <div class="window-title">
+      <span>YouTube Video</span>
+      <button onclick="closeYouTubeWindow()">X</button>
+    </div>
+    <div class="window-content">
+      <iframe id="youtube-iframe" src="https://youtube.com/@dr_bob?si=p2GJ5uR4cyvMGtp4" frameborder="0" allowfullscreen style="width:100%; height:400px;"></iframe>
     </div>
   </div>
   
@@ -307,7 +377,7 @@
   <div id="glitch-screen" class="hidden"></div>
   
   <script>
-    // Fungsi untuk membuka window Profile
+    // Functions for Profile Window
     function openProfile() {
       const win = document.getElementById("profile-window");
       win.style.display = "block";
@@ -319,7 +389,7 @@
       setTimeout(() => { win.style.display = "none"; }, 300);
     }
     
-    // Fungsi untuk membuka window Top Secret Document
+    // Functions for Top Secret Document Window
     function openDocument() {
       const win = document.getElementById("document-window");
       win.style.display = "block";
@@ -331,20 +401,18 @@
       setTimeout(() => { win.style.display = "none"; }, 300);
     }
     
-    // Fungsi untuk membuka CCTV Window
+    // Functions for CCTV Window
     function openCCTV() {
       const win = document.getElementById("cctv-window");
       win.style.display = "block";
       setTimeout(() => { win.classList.add("open"); }, 10);
-      setCamera(1); // Set default ke Camera 1
+      setCamera(1); // Default to Camera 1
     }
     function closeCCTV() {
       const win = document.getElementById("cctv-window");
       win.classList.remove("open");
       setTimeout(() => { win.style.display = "none"; }, 300);
     }
-    
-    // Fungsi untuk mengubah feed CCTV berdasarkan kamera yang dipilih
     function setCamera(cam) {
       let src = "";
       switch(cam) {
@@ -369,7 +437,31 @@
       document.getElementById("cctv-iframe").src = src;
     }
     
-    // Fungsi untuk efek "Don't Open It" (Glitch) dan redirect ke Rick Roll
+    // Functions for Chrome Window (SCP Wiki)
+    function openChrome() {
+      const win = document.getElementById("chrome-window");
+      win.style.display = "block";
+      setTimeout(() => { win.classList.add("open"); }, 10);
+    }
+    function closeChrome() {
+      const win = document.getElementById("chrome-window");
+      win.classList.remove("open");
+      setTimeout(() => { win.style.display = "none"; }, 300);
+    }
+    
+    // Functions for YouTube Window (Dr. Bob's Channel)
+    function openYouTubeWindow() {
+      const win = document.getElementById("youtube-window");
+      win.style.display = "block";
+      setTimeout(() => { win.classList.add("open"); }, 10);
+    }
+    function closeYouTubeWindow() {
+      const win = document.getElementById("youtube-window");
+      win.classList.remove("open");
+      setTimeout(() => { win.style.display = "none"; }, 300);
+    }
+    
+    // Function for "Don't Open It" Glitch Effect and redirect to Rick Roll
     function triggerGlitch() {
       document.getElementById("glitch-screen").classList.remove("hidden");
       setTimeout(() => {
@@ -377,21 +469,12 @@
       }, 2000);
     }
     
-    // Fungsi untuk membuka Chrome
-    function openChrome() {
-      window.open("https://www.google.com/chrome/", "_blank");
-    }
-    // Fungsi untuk membuka YouTube
-    function openYouTube() {
-      window.open("https://www.youtube.com", "_blank");
-    }
-    
-    // Fungsi exit aplikasi: reload halaman
+    // Exit application: reload page
     function exitApp() {
       location.reload();
     }
     
-    // Fungsi untuk toggle fullscreen (enlarge) pada CCTV window
+    // Toggle fullscreen for CCTV window
     let isFullscreen = false;
     function toggleFullscreen() {
       const cctvWindow = document.getElementById('cctv-window');
@@ -412,7 +495,7 @@
       }
     }
     
-    // Update clock (jam & tanggal) di taskbar
+    // Update clock (time & date) in taskbar
     function updateClock() {
       const now = new Date();
       let hours = now.getHours();
@@ -434,4 +517,4 @@
     updateClock();
   </script>
 </body>
-</html>
+  </html>
